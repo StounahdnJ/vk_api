@@ -6,6 +6,4 @@ class DataBase(object):
     	cursor = con.cursor()
 	
 	def request(sql,date):
-		pass
-		
-		
+		pass        
