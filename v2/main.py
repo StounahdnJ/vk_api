@@ -1,11 +1,11 @@
 import json
 import requests
 import time
-import config.py
+import config
 #Получение всех токенов и ключей ---------------------------------
-confirmation_token = config['confirmation_token'] # Токен сообщества
+confirmation_token = config.token['confirmation_token'] # Токен сообщества
 version = 5.122  # Версия api
-token = config['token'] # Токен приложения
+token = config.token['token'] # Токен приложения
 response = requests.get('https://api.vk.com/method/groups.getLongPollServer',params={'access_token': token,'group_id': 191524305,'v': version,}).json()['response']
 data = {'ts':response['ts']} # Номер последнего события
 key = response['key'] # Ключ запроса
