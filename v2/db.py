@@ -1,9 +1,17 @@
 import pymysql.cursors
 
 class DataBase(object):
-	def __init__(self, arg):
-		con = pymysql.connect('localhost', 'root','7157725Rom', 'mpt')
-    	cursor = con.cursor()
-	
-	def request(sql,date):
-		pass        
+	def __init__(self):
+		self.con = pymysql.connect('localhost', 'mysql','mysql', 'bot_vk')
+		self.cursor = self.con.cursor()
+
+	def request(self,sql):
+		try:
+			self.cursor.execute(sql)
+		except Exception as e:
+			pass
+		self.con.commit()
+		print("good")
+		print(sql)
+
+DataBase = DataBase()
