@@ -4,7 +4,7 @@ import time
 import config
 import User
 #Получение всех токенов и ключей ---------------------------------
-version = 5.122  # Версия api
+version = config.token['version']  # Версия api
 token = config.token['token'] # Токен сообщества
 response = requests.get('https://api.vk.com/method/groups.getLongPollServer',params={'access_token': token,'group_id': 191524305,'v': version,}).json()['response']
 data = {'ts':response['ts']} # Номер последнего события
@@ -18,21 +18,21 @@ command_out={'Список':lambda:all_followController()} # Моменталь�
 #-----------------------------------------------------------------
 
 def error(mes,detailed=""): # Отправка пользователю ошибки
-	user.message("Ошибка "+detailed)
+	user.message(config.error['main']+config.error[detailed])
 	print("Пользователь {id}, вводит неверную команду {mes}".format(id=user.id,mes=mes))
 
 def all_followController(): # Вывод всех за кем следит пользователь
-	reply = user.check_follow() # Вывод всех за кем следит {'code':True,'items':[[follow_id1,[array]],[follow_id2,[array]],[follow_id3,[array]]]}, при ошибке {'code':False,'items':[]}
+	reply = user.check_follow()
 	if reply['code']:
 		out=''
 		for follow in reply['items']:
 			out+='{id}\n'.format(id=follow[0])
-	else: out="Список пуст"
+	else: out=config.mes['list is empty']
 	user.message(out)
 	print("Пользователь {id}, запрашивает список".format(id=user.id))
 
 def new_followController(mes): # Обработка добавление слежки
-	reply = user.new_follow(mes) # Добавление, ответ [True,"ok"], при ошибке [False,err_str]
+	reply = user.new_follow(mes)
 	if reply['code']:
 		user.message("Добавленно")
 		user.del_action()
@@ -40,7 +40,7 @@ def new_followController(mes): # Обработка добавление сле�
 	else: error(mes,reply['mes'])
 
 def Controller(mes):
-	if user.check_action(): # Если действие уже выбрано, сделать его
+	if user.check_action()['code']: # Если действие уже выбрано, сделать его
 		methods[user.action](mes)
 	elif mes in command: # Добавить новое действие
 		user.new_action(command[mes][0])
