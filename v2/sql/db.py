@@ -11,7 +11,6 @@ class DataBase(object):
 		except Exception as e:
 			pass
 		self.con.commit()
-		print("good")
-		print(sql)
+		return self.cursor.fetchall()
 
 DataBase = DataBase()
