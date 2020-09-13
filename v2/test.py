@@ -5,26 +5,26 @@ user = User.UserClass(207681600)
 #-----------Test Action-----------#
 
 def test_new_action():
-	user.new_action("new")
-	user.new_action("res")
-	user.new_action(234234)
+	print(user.new_action("new"))
+	print(user.new_action("res"))
+	print(user.new_action(234234))
 
 def test_del_action():
-	user.del_action()
-	user.del_action()
+	print(user.del_action())
+	print(user.del_action())
 
 def test_check_action():
-	user.check_action()
+	print(user.check_action())
 
 def test_action():
 	#Попытка создать два действия
-	user.new_action("new")
-	user.new_action("res")
-	user.check_action()
-	user.del_action()
-	user.del_action()
+	print(user.new_action("new"))
+	print(user.new_action("res"))
+	print(user.check_action())
+	print(user.del_action())
+	print(user.del_action())
 	#Вывод действий, если их нет
-	user.check_action()
+	print(user.check_action())
 
 #--------------------------------#
 
@@ -32,27 +32,48 @@ def test_action():
 
 def test_new_follow():
 	#Попытка двух одинаковых
-	user.new_follow("https://vk.com/romanm4")
-	user.new_follow("https://vk.com/romanm4")
-	user.new_follow("https://vk.com/id467073495")
-	user.new_follow("https://vk.com/id467073495")
+	print(user.new_follow("https://vk.com/romanm4"))
+	print(user.new_follow("https://vk.com/romanm4"))
+	print(user.new_follow("https://vk.com/id467073495"))
+	print(user.new_follow("https://vk.com/id467073495"))
 	#Ссылка на группу
-	user.new_follow("https://vk.com/pikabu")
+	print(user.new_follow("https://vk.com/pikabu"))
 	#Сломанная ссылка
-	user.new_follow("hcom/romanm4")
-	user.new_follow("vk.com/romanфывфывфывm4")
+	print(user.new_follow("hcom/romanm4"))
+	print(user.new_follow("vk.com/romanфывфывфывm4"))
 
 
 def test_del_follow():
-	pass
+	#Попытка двух одинаковых
+	print(user.del_follow("https://vk.com/romanm4"))
+	print(user.del_follow("https://vk.com/romanm4"))
+	print(user.del_follow("https://vk.com/id467073495"))
+	print(user.del_follow("https://vk.com/id467073495"))
+	#Ссылка на группу
+	print(user.del_follow("https://vk.com/pikabu"))
+	#Сломанная ссылка
+	print(user.del_follow("hcom/romanm4"))
+	print(user.del_follow("vk.com/romanфывфывфывm4"))
+
 
 def test_update_follow():
-	pass
+	print(user.update_follow("https://vk.com/romanm4"))
+	print(user.update_follow("https://vk.com/id467073495"))
+	#Ссылка на группу
+	print(user.update_follow("https://vk.com/pikabu"))
+	#Сломанная ссылка
+	print(user.update_follow("hcom/romanm4"))
+	print(user.update_follow("vk.com/romanфывфывфывm4"))
 
-def test_check_follow():
-	pass
 
-def test_follow():
-	pass
+def test_get_follow():
+	print(user.get_follow("https://vk.com/romanm4"))
+	print(user.get_follow("https://vk.com/id467073495"))
+	#Ссылка на группу
+	print(user.get_follow("https://vk.com/pikabu"))
+	#Сломанная ссылка
+	print(user.get_follow("hcom/romanm4"))
+	print(user.get_follow("vk.com/romanфывфывфывm4"))
+
 
 #--------------------------------#

@@ -1,7 +1,13 @@
 import requests
 import config
 
-class Addition(object):
+class Controller(object):
+	"""Класс для взаимодействия с User"""
+	def __init__(self):
+		pass
+		
+
+class Addition(object): # Класс с доп.методами
 	
 	def __init__(self):
 		self.service_key = config.token['service_key'] # Токен сообщества

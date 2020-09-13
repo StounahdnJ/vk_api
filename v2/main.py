@@ -2,7 +2,7 @@ import json
 import requests
 import time
 import config
-import User
+import сontroller
 #Получение всех токенов и ключей ---------------------------------
 version = config.token['version']  # Версия api
 token = config.token['token'] # Токен сообщества
@@ -16,6 +16,8 @@ methods={"new":lambda mes:new_followController(mes),None:lambda mes:error(mes),}
 command={'Добавить':['new','😈Укажите ссылку на пользователя😈'],} # action и сообщение
 command_out={'Список':lambda:all_followController()} # Моментальный действия, без доп ввода
 #-----------------------------------------------------------------
+
+#-------------------Перенос в класс controller-------------------#
 
 def error(mes,detailed=""): # Отправка пользователю ошибки
 	user.message(config.error['main']+config.error[detailed])
@@ -52,7 +54,7 @@ def Controller(mes):
 		command_out[mes]()
 	else: error(mes)
 	 	
-
+#-----------------------------------------------------------------#
 
 while True: # Проверка и обработка запросов
 	data = requests.get(server,params={'act': 'a_check','key': key,'ts': data['ts'],'wait': 25,}).json()
