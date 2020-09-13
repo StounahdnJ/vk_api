@@ -31,6 +31,7 @@ def all_followController(): # Вывод всех за кем следит по�
 	user.message(out)
 	print("Пользователь {id}, запрашивает список".format(id=user.id))
 
+
 def new_followController(mes): # Обработка добавление слежки
 	reply = user.new_follow(mes)
 	if reply['code']:
@@ -38,6 +39,7 @@ def new_followController(mes): # Обработка добавление сле�
 		user.del_action()
 		print("Пользователь {id}, добавляет {mes} в список".format(id=user.id,mes=mes))
 	else: error(mes,reply['mes'])
+
 
 def Controller(mes):
 	if user.check_action()['code']: # Если действие уже выбрано, сделать его
