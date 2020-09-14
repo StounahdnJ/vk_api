@@ -1,4 +1,5 @@
 import User
+import controller
 
 user = User.UserClass(207681600)
 
@@ -77,3 +78,8 @@ def test_get_follow():
 
 
 #--------------------------------#
+
+cont = controller.Controller()
+
+cont.actionController(207681600,"Добавить")
+cont.actionController(207681600,"https://vk.com/romanm4")
