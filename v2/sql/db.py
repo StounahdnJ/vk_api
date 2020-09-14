@@ -2,8 +2,12 @@ import pymysql.cursors
 
 class DataBase(object):
 	def __init__(self):
-		self.con = pymysql.connect('localhost', 'mysql','mysql', 'bot_vk')
-		self.cursor = self.con.cursor()
+		try:
+			self.con = pymysql.connect('localhost', 'mysql','mysql', 'bot_vk')
+			self.cursor = self.con.cursor()
+		except Exception as e:
+			print('Error connect DataBase')
+		
 
 	def request(self,sql):
 		try:

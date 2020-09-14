@@ -17,7 +17,7 @@ class Addition(object):
 	def check_id(self,id): # 
 		"""Проверка на пользователя и открыт ли профиль, возврат {"code":bool,"mes":str,"id":int}"""
 
-		id = id.replace('https://vk.com/', '').replace('http://vk.com/', '').replace('vk.com/', '')
+		id = id.replace('https://vk.com/', '').replace('http://vk.com/', '').replace('vk.com/', '') if id is int else 'id'+str(id)
 		response = requests.get('https://api.vk.com/method/utils.resolveScreenName',params={'screen_name': id,'access_token': self.service_key,'v': self.version}).json()
 		try:
 			if response['response']['type']=="user": return {"code":True,"mes":"ok","id":int(response['response']['object_id'])}
@@ -25,10 +25,10 @@ class Addition(object):
 		except Exception as e:
 			return {"code":False,"mes":"id","id":None}
 
-	def __view_friends(self,id):
+	def view_friends(self,id):
 		"""Возвращает всех друзей пользователя, возврат {"code":bool,"mes":str,"id":int,"items":array}"""
 
-		id = self.__check_id(id)
+		id = self.check_id(id)
 		if id['code']:
 			try:
 				response=requests.get('https://api.vk.com/method/friends.get',params={'user_id': id['id'],'access_token': self.service_key,'v': self.version}).json()['response']['items']
@@ -86,7 +86,7 @@ class UserClass(Addition):
 	def new_follow(self,follow_id):
 		"""Добавление пользователя в список для слежки, возврат {"code":bool,"mes":str}"""
 
-		friends = self.__view_friends(follow_id)
+		friends = self.view_friends(follow_id)
 
 		if friends['id'] in [mas['id'] for mas in self.get_follow()['items']]: # Проверка на наличие уже в списке для слежки
 			return {"code":False,"mes":'already'}
@@ -111,7 +111,7 @@ class UserClass(Addition):
 		else: 
 
 			try: # Получение id через ссылку на пользователя
-				id = self.__check_id(follow_id)
+				id = self.check_id(follow_id)
 			except Exception as e:
 				id = {'code':False,'mes':'id', 'id': None}
 
@@ -126,7 +126,7 @@ class UserClass(Addition):
 	def update_follow(self,follow_id):
 		"""Обновляет друзей тех за кем следят"""
 
-		friends = self.__view_friends(follow_id)
+		friends = self.view_friends(follow_id)
 		if friends['code']:
 			self.db.request("""UPDATE `user` SET `list`="{list}" WHERE `user_id`={id} AND `follow_id`={follow_id}""".format(id=self.id,follow_id=friends['id'],list=json.dumps(friends['items'])))
 			return {"code":True,"mes":"ok"}
@@ -149,3 +149,24 @@ class UserClass(Addition):
 			#------------------------------------------------------------------
 			return {"code":True,"items":out}
 		return {"code":False,"items":[]}
+
+	def update(self):
+		"""Возвращает все изменения друзей, возврат {'new_friends':{'id':id,'friends':array},'del_friends':{'id':id,'friends':array}}"""
+
+		all_follow = self.get_follow(friend=True)
+		old_follow = [[mas['id'],mas['friends']] for mas in all_follow['items']] # Получение старых списков друзей
+		new_follow = [] # Массив для новых полных списков друзей
+		dell = [] # Массив для удаленных друзей
+		add = [] # Массив для новых друзей
+
+		for x in old_follow: new_follow.append([x[0],self.view_friends(x[0])['items']]) # Получения обновления по всем спискам друзей
+
+		for g in range(len(old_follow)): # Поиск удаленных id
+			mas = [None if i in new_follow[g][1] else i for i in old_follow[g][1]]
+			dell.append({'id':old_follow[g][0],'friends':[value for value in mas if value != None]})
+
+		for g in range(len(old_follow)): # Поиск новых id
+			mas = [None if i in old_follow[g][1] else i for i in new_follow[g][1]]
+			add.append({'id':new_follow[g][0],'friends':[value for value in mas if value != None]})
+
+		return {'new_friends':add,'del_friends':dell}
