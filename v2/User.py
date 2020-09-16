@@ -30,10 +30,11 @@ class Addition(object):
 
 		id = self.check_id(id)
 		if id['code']:
+			response=requests.get('https://api.vk.com/method/friends.get',params={'user_id': id['id'],'access_token': self.service_key,'v': self.version}).json()
 			try:
-				response=requests.get('https://api.vk.com/method/friends.get',params={'user_id': id['id'],'access_token': self.service_key,'v': self.version}).json()['response']['items']
-				return {"code":True,"mes":'ok',"id":id['id'],"items":response}
-			except Exception as e: pass
+				return {"code":True,"mes":'ok',"id":id['id'],"items":response['response']['items']}
+			except Exception as e: 
+				return {"code":False,"mes":'close prof',"id":id['id'],"items":None}
 		return {"code":False,"mes":id['mes'],"id":id['id'],"items":None}
 
 
@@ -151,22 +152,30 @@ class UserClass(Addition):
 		return {"code":False,"items":[]}
 
 	def update(self):
-		"""Возвращает все изменения друзей, возврат {'new_friends':{'id':id,'friends':array},'del_friends':{'id':id,'friends':array}}"""
+		"""Возвращает все изменения друзей, возврат {'new_friends':{'id':id,'friends':array},'del_friends':{'id':id,'friends':array},'block':array}"""
 
 		all_follow = self.get_follow(friend=True)
 		old_follow = [[mas['id'],mas['friends']] for mas in all_follow['items']] # Получение старых списков друзей
 		new_follow = [] # Массив для новых полных списков друзей
 		dell = [] # Массив для удаленных друзей
 		add = [] # Массив для новых друзей
+		block = [] # Массив тех, кого нельзя проверить
 
-		for x in old_follow: new_follow.append([x[0],self.view_friends(x[0])['items']]) # Получения обновления по всем спискам друзей
+		for x in old_follow: # Получения обновления по всем спискам друзей
+			friend = self.view_friends(x[0])
+			if friend['code']: new_follow.append([x[0],friend['items'],True]) 
+			else: 
+				new_follow.append([x[0],[],False]) 
+				block.append([x[0]])
 
 		for g in range(len(old_follow)): # Поиск удаленных id
-			mas = [None if i in new_follow[g][1] else i for i in old_follow[g][1]]
-			dell.append({'id':old_follow[g][0],'friends':[value for value in mas if value != None]})
+			if new_follow[g][2]:
+				mas = [None if i in new_follow[g][1] else i for i in old_follow[g][1]]
+				dell.append({'id':old_follow[g][0],'friends':[value for value in mas if value != None]})
 
 		for g in range(len(old_follow)): # Поиск новых id
-			mas = [None if i in old_follow[g][1] else i for i in new_follow[g][1]]
-			add.append({'id':new_follow[g][0],'friends':[value for value in mas if value != None]})
+			if new_follow[g][2]:
+				mas = [None if i in old_follow[g][1] else i for i in new_follow[g][1]]
+				add.append({'id':new_follow[g][0],'friends':[value for value in mas if value != None]})
 
-		return {'new_friends':add,'del_friends':dell}
+		return {'new_friends':add,'del_friends':dell,'block':block}
