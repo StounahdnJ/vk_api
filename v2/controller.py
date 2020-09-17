@@ -69,7 +69,7 @@ class Controller(object):
 			out = ""
 			num = 1
 			for i in follows['items']:
-				out+="{num}. {id}\n".format(num=num,id=i['id'])
+				out+="{num}. {id}\n".format(num=num,id=user.get_name(i['id']))
 				num+=1
 			self.user.message(out)
 		else: self.user.message(config.mes['list is empty'])

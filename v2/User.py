@@ -14,8 +14,19 @@ class Addition(object):
 		self.token = config.token['token'] # Токен приложения
 		self.version = config.token['version']  # Версия api
 
+	def get_name(self,id):
+		"""Возврат имени пользователя, принимает (ссылку), возврат {"code":bool,"mes":str,"id":int}"""
+
+		id = id.replace('https://vk.com/', '').replace('http://vk.com/', '').replace('vk.com/', '') if not (id is int) else 'id'+str(id)
+		response = requests.get('https://api.vk.com/method/users.get',params={'user_ids': id,'access_token': self.service_key,'v': self.version}).json()
+		try:
+			 return {'code':True,'id':response['response'][0]['id'],'name':(response['response'][0]['first_name']+' '+response['response'][0]['last_name'])}
+		except Exception as e:
+			 return {'code':False,'id':id,'name':None}
+		
+
 	def check_id(self,id): # 
-		"""Проверка на пользователя и открыт ли профиль, возврат {"code":bool,"mes":str,"id":int}"""
+		"""Проверка на пользователя и открыт ли профиль, принимает (ссылку), возврат {"code":bool,"mes":str,"id":int}"""
 
 		id = id.replace('https://vk.com/', '').replace('http://vk.com/', '').replace('vk.com/', '') if id is int else 'id'+str(id)
 		response = requests.get('https://api.vk.com/method/utils.resolveScreenName',params={'screen_name': id,'access_token': self.service_key,'v': self.version}).json()
@@ -26,7 +37,7 @@ class Addition(object):
 			return {"code":False,"mes":"id","id":None}
 
 	def view_friends(self,id):
-		"""Возвращает всех друзей пользователя, возврат {"code":bool,"mes":str,"id":int,"items":array}"""
+		"""Возвращает всех друзей пользователя, принимает (ссылку), возврат {"code":bool,"mes":str,"id":int,"items":array}"""
 
 		id = self.check_id(id)
 		if id['code']:
@@ -58,7 +69,7 @@ class UserClass(Addition):
 	#----------action methods----------#
 
 	def new_action(self,action):
-		"""Создает новое пользовательское действие, возврат None"""
+		"""Создает новое пользовательское действие, принимает (строку), возврат None"""
 
 		if not self.check_action()['code']: # Если нет action
 			self.db.request("""INSERT INTO `request`(`user_id`, `action`, `date`) VALUES ({id},"{action}",{date})""".format(id=self.id,action=action,date=int(time.time())))
@@ -85,7 +96,7 @@ class UserClass(Addition):
 	#-------------follow-------------#
 
 	def new_follow(self,follow_id):
-		"""Добавление пользователя в список для слежки, возврат {"code":bool,"mes":str}"""
+		"""Добавление пользователя в список для слежки, принимает (ссылку), возврат {"code":bool,"mes":str}"""
 
 		friends = self.view_friends(follow_id)
 
@@ -100,7 +111,7 @@ class UserClass(Addition):
 
 
 	def del_follow(self,follow_id=None,number=None,by_number=False):
-		"""Удаляет пользователя из списка для слежки, через номер по списку или ссылке"""
+		"""Удаляет пользователя из списка для слежки,, принимает (ссылку,число,bool) через номер по списку или ссылке"""
 		
 		if by_number: # Если удаление по номеру
  
@@ -125,7 +136,7 @@ class UserClass(Addition):
 
 
 	def update_follow(self,follow_id):
-		"""Обновляет друзей тех за кем следят"""
+		"""Обновляет друзей тех за кем следят, принимает (ссылку), возврат {'code':bool,'mes':str}"""
 
 		friends = self.view_friends(follow_id)
 		if friends['code']:

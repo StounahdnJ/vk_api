@@ -1,7 +1,5 @@
 import User
 import controller
-import numpy as np
-
 user = User.UserClass(207681600)
 
 #-----------Test Action-----------#
@@ -83,4 +81,4 @@ def test_get_follow():
 #all_follow = user.update()
 
 
-print(user.update())
+print(user.get_name('https://vk.com/romanm4'))
