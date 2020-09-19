@@ -58,7 +58,6 @@ class UserClass(Addition):
 		self.token = config.token['token'] # Токен приложения
 		self.version = config.token['version']  # Версия api
 		self.keyboard = None
-		self.action = None
 
 
 	def message(self,message):
@@ -87,7 +86,6 @@ class UserClass(Addition):
 		request = self.db.request("""SELECT `action`,`date` FROM `request` WHERE `user_id`={id}""".format(id=self.id))
 		if request: # Проверка на наличие ответа
 			if request[0][1] < int(time.time())+(60*60*24):
-				self.action=request[0][0]
 				return {"code":True,"action":request[0][0]}
 			else:
 				self.del_action()
@@ -111,7 +109,7 @@ class UserClass(Addition):
 
 
 	def del_follow(self,follow_id=None,number=None,by_number=False):
-		"""Удаляет пользователя из списка для слежки,, принимает (ссылку,число,bool) через номер по списку или ссылке"""
+		"""Удаляет пользователя из списка для слежки, принимает (ссылку,число,bool) через номер по списку или ссылке"""
 		
 		if by_number: # Если удаление по номеру
  
@@ -128,7 +126,6 @@ class UserClass(Addition):
 				id = {'code':False,'mes':'id', 'id': None}
 
 		if id['code']: # Если пользователь есть, удалить из списка
-
 			self.db.request("""DELETE FROM `user` WHERE `user_id`={id} AND `follow_id`={follow_id}""".format(id=self.id,follow_id=id['id']))
 			return {"code":True,"mes":"ok"}
 
@@ -152,13 +149,12 @@ class UserClass(Addition):
 		request = self.db.request(sql[friend].format(id=self.id))
 		if request: 
 			out=[]
-			#-----------ВОЗМОЖНО НАДО ИСПРАВИТЬ ОБРАБОТКУ ИСКЛЮЧЕНИЙ-----------
-			for friend in request:
-				try:
+			if friend:
+				for friends in request:
 					out.append({"id":friend[0],"friends":json.loads(friend[1])})
-				except Exception as e:
+			else:
+				for friends in request:
 					out.append({"id":friend[0]})
-			#------------------------------------------------------------------
 			return {"code":True,"items":out}
 		return {"code":False,"items":[]}
 
