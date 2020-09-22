@@ -27,6 +27,8 @@ class Controller(object):
 		print(mes)
 
 	def __list_follow(self):
+		"""Создает список(перечесление) всех за кем следить пользователь"""
+
 		follows = self.user.get_follow()
 		if follows['code']:
 			out = ""
@@ -38,6 +40,8 @@ class Controller(object):
 		return out
 
 	def update(self):
+		"""Метод для обновления новых и удаленных друзей"""
+
 		user_loc = User.UserClass(1)
 		while True:
 			for x in user_loc.all_user(): # Получение всех пользователей и проход по ним

@@ -1,8 +1,11 @@
+#Внешние библиотеки
 import json
 import requests
-import config
-import controller
 import threading
+#Мои файлы
+import controller
+import config
+
 
 control = controller.Controller()
 #Получение всех токенов и ключей ---------------------------------
@@ -15,7 +18,8 @@ server = response['server'] #Сервер для ожидания ответа
 #-----------------------------------------------------------------
 
 t1 = threading.Thread(target = control.update)
-t1.start()
+t1.start() # Отдельный поток для проверки пользователей
+
 while True: # Проверка и обработка запросов
 	data = requests.get(server,params={'act': 'a_check','key': key,'ts': data['ts'],'wait': 25,}).json()
 	if data['updates']:   
