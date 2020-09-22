@@ -1,5 +1,6 @@
 #Внешние библиотеки
 import requests
+import time
 #Мои файлы
 import config
 import User
@@ -13,10 +14,10 @@ class Controller(object):
 		self.user = None
 
 
-	def error(self,detailed=""):
+	def error(self,detailed="",action=False):
 		"""Вывод какой либо ошибки"""
 
-		self.user.message(config.error['main']+config.error[detailed])
+		self.user.message(config.error['main']+config.error[detailed],action)
 		self.__log("Пользователь {id}, делает ошибку ({detailed})".format(id=self.user.id,detailed=detailed))
 
 
@@ -25,6 +26,40 @@ class Controller(object):
 
 		print(mes)
 
+	def __list_follow(self):
+		follows = self.user.get_follow()
+		if follows['code']:
+			out = ""
+			num = 1
+			for i in follows['items']:
+				out+="{num}. {id}\n".format(num=num,id=self.user.get_name(i['id'])['name'])
+				num+=1
+		else: out = config.mes['list is empty']
+		return out
+
+	def update(self):
+		user_loc = User.UserClass(1)
+		while True:
+			for x in user_loc.all_user(): # Получение всех пользователей и проход по ним
+				user = User.UserClass(x)
+				follow = user.update_user()
+
+				for i in follow['new_friends']: # Проверка и проход по новым друзьям тех за кем следит
+					for friend in i['friends']: # Проход именно по тем кто появился
+						user.message(config.mes['new friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name']))
+					user.update_follow(i['id'])
+
+				for i in follow['del_friends']: # Проверка и проход по удаленным друзьям тех за кем следит
+					for friend in i['friends']: # Проход именно по тем кто появился
+						user.message(config.mes['del friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name']))
+					user.update_follow(i['id'])
+
+				for i in follow['block']: # Проверка и проход по заблокированным людям из слежки
+					user.message(config.mes['close prof'].format(id=user.get_name(i)['name']))
+					user.update_follow(0)
+
+			print('Сделал обновление')
+			time.sleep(5)
 
 	def __new_followController(self,mes,action=False):
 		"""Добавляет нового пользователя в список"""
@@ -33,13 +68,13 @@ class Controller(object):
 			follow = self.user.new_follow(mes) # добавление в спиок
 			if follow['code']:
 				self.user.del_action()
-				self.user.message(config.mes['ok new'])
+				self.user.message(config.mes['ok new'].format(id=self.user.get_name(follow['id'])['name']))
 				self.__log("Пользователь {id}, добавляет {mes} в свой список".format(id=self.user.id,mes=mes))
 			else: 
-				self.error(follow['mes'])
+				self.error(follow['mes'],action=True)
 		else: 
 			self.user.new_action("new")
-			self.user.message(self.command[mes]['mes'])
+			self.user.message(self.command[mes]['mes'],action=True)
 			self.__log("Пользователь {id}, хочет сделать new".format(id=self.user.id))
 
 
@@ -50,29 +85,20 @@ class Controller(object):
 			follow = self.user.del_follow(number=mes,by_number=True)
 			if follow['code']:
 				self.user.del_action()
-				self.user.message(config.mes['ok del'])
+				self.user.message(config.mes['ok del'].format(id=self.user.get_name(follow['id'])['name']))
 				self.__log("Пользователь {id}, удаляет из списка человека".format(id=self.user.id,mes=mes))
 			else: 
-				self.error(follow['mes'])
+				self.error(follow['mes'],action=True)
 		else: 
 			self.user.new_action("del")
-			self.user.message(self.command[mes]['mes'])
-			self.__all_followController()
+			self.user.message((self.command[mes]['mes']+'\n'+self.__list_follow()),action=True)
 			self.__log("Пользователь {id}, хочет сделать del".format(id=self.user.id))
 	
 
 	def __all_followController(self):
 		"""Возвращает список за кем следит пользователь"""
-
-		follows = self.user.get_follow()
-		if follows['code']:
-			out = ""
-			num = 1
-			for i in follows['items']:
-				out+="{num}. {id}\n".format(num=num,id=user.get_name(i['id']))
-				num+=1
-			self.user.message(out)
-		else: self.user.message(config.mes['list is empty'])
+		
+		self.user.message(self.__list_follow())
 		self.__log("Пользователь {id}, запросил список".format(id=self.user.id))
 
 

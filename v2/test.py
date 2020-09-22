@@ -1,6 +1,10 @@
 import User
 import controller
+import threading
+import time
+
 user = User.UserClass(207681600)
+control = controller.Controller()
 
 #-----------Test Action-----------#
 
@@ -78,7 +82,4 @@ def test_get_follow():
 
 #--------------------------------#
 
-#all_follow = user.update()
-
-
-print(user.get_name('https://vk.com/romanm4'))
+print(control.update())
