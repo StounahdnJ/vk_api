@@ -63,7 +63,7 @@ class Controller(object):
 					user.update_follow(0)
 
 			print('Сделал обновление')
-			time.sleep(5)
+			time.sleep(config.setting['update_time'])
 
 	def __new_followController(self,mes,action=False):
 		"""Добавляет нового пользователя в список"""

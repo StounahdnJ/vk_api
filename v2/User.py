@@ -198,9 +198,8 @@ class UserClass(Addition):
 	def update_user(self):
 		"""Возвращает все изменения друзей, возврат {'new_friends':{'id':id,'friends':array},'del_friends':{'id':id,'friends':array},'block':array}"""
 		
-		if not self.detailed['active'] or self.detailed['update_date']+self.update_time > int(time.time()):
-			return {'code':False,'new_friends':[],'del_friends':[],'block':[]}
-		print(self.detailed['update_date']+self.update_time > int(time.time()))
+		# if not self.detailed['active'] or self.detailed['update_date']+self.update_time > int(time.time()):
+		# 	return {'code':False,'new_friends':[],'del_friends':[],'block':[]}
 		old_follow = [[mas['id'],mas['friends']] for mas in self.get_follow(friend=True)['items']] # Получение старых списков друзей
 		new_follow = [] # Массив для новых полных списков друзей
 		dell = [] # Массив для удаленных друзей
