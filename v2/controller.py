@@ -4,6 +4,7 @@ import time
 #Мои файлы
 import config
 import User
+import datetime
 
 class Controller(object):
 	"""Класс для взаимодействия с User"""
@@ -43,24 +44,33 @@ class Controller(object):
 		"""Метод для обновления новых и удаленных друзей"""
 
 		user_loc = User.UserClass(1)
+		mounths = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]
 		while True:
 			for x in user_loc.all_user(): # Получение всех пользователей и проход по ним
 				user = User.UserClass(x)
 				follow = user.update_user()
-
+				col = 0
+				date = datetime.datetime.now()
+				mes = config.mes['time'].format(year=date.year,month=mounths[date.month-1],min=date.strftime("%I:%M"))
 				for i in follow['new_friends']: # Проверка и проход по новым друзьям тех за кем следит
 					for friend in i['friends']: # Проход именно по тем кто появился
-						user.message(config.mes['new friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name']))
+						mes += config.mes['new friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name'])+"\n"
+						col+=1
 					user.update_follow(i['id'])
 
 				for i in follow['del_friends']: # Проверка и проход по удаленным друзьям тех за кем следит
 					for friend in i['friends']: # Проход именно по тем кто появился
-						user.message(config.mes['del friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name']))
+						mes += config.mes['del friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name'])+"\n"
+						col+=1
 					user.update_follow(i['id'])
 
 				for i in follow['block']: # Проверка и проход по заблокированным людям из слежки
-					user.message(config.mes['close prof'].format(id=user.get_name(i)['name']))
+					mes += config.mes['close prof'].format(id=user.get_name(i)['name'])+"\n"
+					col+=1
 					user.update_follow(0)
+				mes+="\n"+config.mes['dop']
+				if col>0:
+					user.message(mes)
 
 			print('Сделал обновление')
 			time.sleep(config.setting['update_time'])
