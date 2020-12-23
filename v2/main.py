@@ -32,4 +32,5 @@ while True: # Проверка и обработка запросов
 		data = {'ts':response['ts']} # Номер последнего события
 		key = response['key'] # Ключ запроса
 		server = response['server'] #Сервер для ожидания ответа
+		response = requests.get('https://api.vk.com/method/groups.enableOnline',params={'access_token': token,'group_id': 146718597,'v': version,})
 		print('Ошибочное сообщение от ВК')
