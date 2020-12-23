@@ -1,6 +1,6 @@
-Friends-VKBot
+Friends-VK-Bot
 =====================
-### This bot is designed to spy on the user's friends of another person.
+### This Bot is designed to spy on the user's friends of another person.
 
 ### [Config.py](https://github.com/StounhandJ/Friends-VK-Bot/blob/master/v2/config.py) settings for startup:
 * Change the community and app keys, as well as the group id.
