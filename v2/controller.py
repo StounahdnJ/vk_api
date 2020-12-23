@@ -51,7 +51,7 @@ class Controller(object):
 				follow = user.update_user()
 				col = 0
 				date = datetime.datetime.now()
-				mes = config.mes['time'].format(year=date.year,month=mounths[date.month-1],min=date.strftime("%I:%M"))
+				mes = config.mes['time'].format(year=date.year,day=date.day,month=mounths[date.month-1],min=date.strftime("%H:%M"))
 				for i in follow['new_friends']: # Проверка и проход по новым друзьям тех за кем следит
 					for friend in i['friends']: # Проход именно по тем кто появился
 						mes += config.mes['new friend'].format(id=user.get_name(i['id'])['name'],friend=user.get_name(friend)['name'])+"\n"

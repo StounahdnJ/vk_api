@@ -1,11 +1,12 @@
 import pymysql.cursors
+import config
 
 class DataBase(object):
 	# def __init__(self):
 
 	def request(self,sql):
 		try:
-			self.con = pymysql.connect('localhost', 'ci17950_vk','7157725', 'ci17950_vk')
+			self.con = pymysql.connect(config.setting['host_dp'],config.setting['login_db'],config.setting['password_db'], config.setting['name_db'])
 			self.cursor = self.con.cursor()
 		except Exception as e:
 			print('Error connect DataBase')
