@@ -11,7 +11,7 @@ class Controller(object):
 	
 	def __init__(self):
 		self.methods={"new":lambda mes,bool=False:self.__new_followController(mes,bool),"list":lambda mes:self.__all_followController(),"del":lambda mes,bool=False:self.__del_followController(mes,bool)}
-		self.command={'Добавить':{'action':"new",'mes':"😈Укажите ссылку на пользователя😈"},'Список':{'action':"list",'mes':""},'Удалить':{'action':"del",'mes':"Напишите номер кого хотите удалить"}}
+		self.command={'Добавить':{'action':"new",'mes':"😈Укажите ссылку на пользователя😈"},'Начать':{'action':"new",'mes':"😈Укажите ссылку на пользователя😈"},'Список':{'action':"list",'mes':""},'Удалить':{'action':"del",'mes':"Напишите номер кого хотите удалить"}}
 		self.user = None
 
 
