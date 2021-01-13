@@ -66,6 +66,7 @@ class Controller(object):
 
 				for i in follow['block']: # Проверка и проход по заблокированным людям из слежки
 					mes += config.mes['close prof'].format(id=user.get_name(i)['name'])+"\n"
+					user.del_follow(follow_id=i)
 					col+=1
 					user.update_follow(0)
 				mes+="\n"+config.mes['dop']
