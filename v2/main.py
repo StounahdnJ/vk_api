@@ -1,36 +1,40 @@
 #! /usr/bin/python
-#Внешние библиотеки
+# Внешние библиотеки
 import json
 import requests
 import threading
-#Мои файлы
+# Мои файлы
 import controller
 import config
 
-
 control = controller.Controller()
-#Получение всех токенов и ключей ---------------------------------
+# Получение всех токенов и ключей ---------------------------------
 version = config.token['version']  # Версия api
-token = config.token['token'] # Токен сообщества
-response = requests.get('https://api.vk.com/method/groups.getLongPollServer',params={'access_token': token,'group_id': config.token['group_id'],'v': version,}).json()['response']
-data = {'ts':response['ts']} # Номер последнего события
-key = response['key'] # Ключ запроса
-server = response['server'] #Сервер для ожидания ответа
-#-----------------------------------------------------------------
+token = config.token['token']  # Токен сообщества
+response = requests.get('https://api.vk.com/method/groups.getLongPollServer',
+                        params={'access_token': token, 'group_id': config.token['group_id'], 'v': version,
+                                }).json()['response']
+data = {'ts': response['ts']}  # Номер последнего события
+key = response['key']  # Ключ запроса
+server = response['server']  # Сервер для ожидания ответа
+# -----------------------------------------------------------------
 
-t1 = threading.Thread(target = control.update)
-t1.start() # Отдельный поток для проверки пользователей
+t1 = threading.Thread(target=control.update)
+t1.start()  # Отдельный поток для проверки пользователей
 
-while True: # Проверка и обработка запросов
-	data = requests.get(server,params={'act': 'a_check','key': key,'ts': data['ts'],'wait': 90,}).json()
-	try:
-		if data['updates']:
-			for mas in data['updates']:
-				control.actionController(mas['object']['message']['from_id'],mas['object']['message']['text'])
-	except Exception as e:
-		response = requests.get('https://api.vk.com/method/groups.getLongPollServer',params={'access_token': token,'group_id': config.token['group_id'],'v': version,}).json()['response']
-		data = {'ts':response['ts']} # Номер последнего события
-		key = response['key'] # Ключ запроса
-		server = response['server'] #Сервер для ожидания ответа
-		response = requests.get('https://api.vk.com/method/groups.enableOnline',params={'access_token': token,'group_id': config.token['group_id'],'v': version,})
-		print('Ошибочное сообщение от ВК')
+while True:  # Проверка и обработка запросов
+    data = requests.get(server, params={'act': 'a_check', 'key': key, 'ts': data['ts'], 'wait': 90, }).json()
+    try:
+        if data['updates']:
+            for mas in data['updates']:
+                control.actionController(mas['object']['message']['from_id'], mas['object']['message']['text'])
+    except Exception as e:
+        response = requests.get('https://api.vk.com/method/groups.getLongPollServer',
+                                params={'access_token': token, 'group_id': config.token['group_id'],
+                                        'v': version, }).json()['response']
+        data = {'ts': response['ts']}  # Номер последнего события
+        key = response['key']  # Ключ запроса
+        server = response['server']  # Сервер для ожидания ответа
+        response = requests.get('https://api.vk.com/method/groups.enableOnline',
+                                params={'access_token': token, 'group_id': config.token['group_id'], 'v': version, })
+        print('Ошибочное сообщение от ВК')
